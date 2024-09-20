@@ -70,6 +70,9 @@ public class Task {
     return true;
   }
 
+  public Task(){
+    
+  }
   public Task(Long id, User user, @NotNull @NotEmpty @Size(min = 1, max = 255) String description) {
     this.id = id;
     this.user = user;

@@ -1,6 +1,7 @@
 package com.thomaslincoln.todosimple.services;
 
 import java.util.Optional;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,8 +27,13 @@ public class TaskService {
         .orElseThrow(() -> new RuntimeException("Task não encontrada! Id:" + id + ", Tipo: " + Task.class.getName()));
   }
 
+  public List<Task> findAllByUserId(Long userId) {
+    List<Task> tasks = this.taskRepository.findByUser_Id(userId);
+    return tasks;
+  }
+
   @Transactional
-  public Task create(Task obj){
+  public Task create(Task obj) {
     User user = this.userService.findById(obj.getUser().getId());
     obj.setId(null);
     obj.setUser(user);
@@ -36,17 +42,17 @@ public class TaskService {
   }
 
   @Transactional
-  public Task update(Task obj){
+  public Task update(Task obj) {
     Task newObj = findById(obj.getId());
     newObj.setDescription(obj.getDescription());
     return this.taskRepository.save(newObj);
   }
 
-  public void delete(Long id){
+  public void delete(Long id) {
     Task obj = findById(id);
-    try{
+    try {
       this.taskRepository.delete(obj);
-    } catch (Exception e){
+    } catch (Exception e) {
       throw new RuntimeException("Não é possível excluir essa Task");
     }
   }
