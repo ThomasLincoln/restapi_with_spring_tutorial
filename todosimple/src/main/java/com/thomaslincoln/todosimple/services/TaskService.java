@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import com.thomaslincoln.todosimple.models.Task;
 import com.thomaslincoln.todosimple.models.User;
 import com.thomaslincoln.todosimple.repositories.TaskRepository;
+import com.thomaslincoln.todosimple.services.exceptions.DataBindingViolationException;
+import com.thomaslincoln.todosimple.services.exceptions.ObjectNotFoundException;
 
 import jakarta.transaction.Transactional;
 
@@ -24,7 +26,7 @@ public class TaskService {
   public Task findById(Long id) {
     Optional<Task> task = this.taskRepository.findById(id);
     return task
-        .orElseThrow(() -> new RuntimeException("Task não encontrada! Id:" + id + ", Tipo: " + Task.class.getName()));
+        .orElseThrow(() -> new ObjectNotFoundException("Task não encontrada! Id:" + id + ", Tipo: " + Task.class.getName()));
   }
 
   public List<Task> findAllByUserId(Long userId) {
@@ -53,7 +55,7 @@ public class TaskService {
     try {
       this.taskRepository.delete(obj);
     } catch (Exception e) {
-      throw new RuntimeException("Não é possível excluir essa Task");
+      throw new DataBindingViolationException("Não é possível excluir essa Task");
     }
   }
 }
