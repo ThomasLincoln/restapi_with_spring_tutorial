@@ -15,10 +15,13 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.intercept.AuthorizationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.thomaslincoln.todosimple.security.JWTAuthenticationFilter;
+import com.thomaslincoln.todosimple.security.JWTAuthorizationFilter;
 import com.thomaslincoln.todosimple.security.JWTUtil;
 
 @Configuration
@@ -27,6 +30,8 @@ import com.thomaslincoln.todosimple.security.JWTUtil;
 public class SecurityConfig {
 
   private AuthenticationManager authenticationManager;
+
+  private AuthorizationFilter authorizationFilter;
 
   @Autowired
   private UserDetailsService userDetailsService;
@@ -58,6 +63,11 @@ public class SecurityConfig {
     http.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, PUBLIC_MATCHERS_POST).permitAll()
         .requestMatchers(PUBLIC_MATCHERS).permitAll()
         .anyRequest().authenticated());
+    http.authenticationManager(authenticationManager);
+
+    http.addFilter(new JWTAuthenticationFilter(this.authenticationManager, this.jwtUtil));
+    http.addFilter(new JWTAuthorizationFilter(this.authenticationManager, this.jwtUtil, this.userDetailsService));
+
     http.sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
     return http.build();
   }

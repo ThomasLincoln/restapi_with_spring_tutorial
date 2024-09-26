@@ -9,5 +9,5 @@ import com.thomaslincoln.todosimple.models.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
   @Transactional(readOnly = true)
-  User findyByUsername(String username);
+  User findByUsername(String username);
 }
