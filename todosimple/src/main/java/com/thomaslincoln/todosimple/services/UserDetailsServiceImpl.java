@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.thomaslincoln.todosimple.models.User;
 import com.thomaslincoln.todosimple.repositories.UserRepository;
-import com.thomaslincoln.todosimple.security.UserSprintSecurity;
+import com.thomaslincoln.todosimple.security.UserSpringSecurity;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -28,7 +28,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     if(Objects.isNull(user)){
       throw new UsernameNotFoundException(username);
     }
-    return new UserSprintSecurity(user.getId(), user.getUsername(), user.getPassword(), user.getProfiles());
+    return new UserSpringSecurity(user.getId(), user.getUsername(), user.getPassword(), user.getProfiles());
   }
 
 }

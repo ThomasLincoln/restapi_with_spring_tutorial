@@ -15,45 +15,45 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @Getter
-public class UserSprintSecurity implements UserDetails{
+public class UserSpringSecurity implements UserDetails {
 
   private Long id;
   private String username;
   private String password;
   private Collection<? extends GrantedAuthority> authorities;
 
-  public UserSprintSecurity(Long id, String username, String password,
+  public UserSpringSecurity(Long id, String username, String password,
       Set<ProfileEnum> profileEnums) {
     this.id = id;
     this.username = username;
     this.password = password;
     // ele transforma os enums em autoridades
-    this.authorities = profileEnums.stream().map(x -> new SimpleGrantedAuthority(x.getDescription())).collect(Collectors.toList());
+    this.authorities = profileEnums.stream().map(x -> new SimpleGrantedAuthority(x.getDescription()))
+        .collect(Collectors.toList());
   }
 
   @Override
-  public boolean isAccountNonExpired(){
+  public boolean isAccountNonExpired() {
     return true;
   }
 
   @Override
-  public boolean isAccountNonLocked(){
+  public boolean isAccountNonLocked() {
     return true;
   }
 
   @Override
-  public boolean isCredentialsNonExpired(){
+  public boolean isCredentialsNonExpired() {
     return true;
   }
 
   @Override
-  public boolean isEnabled(){
+  public boolean isEnabled() {
     return true;
   }
 
-  public boolean hasRole(ProfileEnum profileEnum){
+  public boolean hasRole(ProfileEnum profileEnum) {
     return getAuthorities().contains(new SimpleGrantedAuthority(profileEnum.getDescription()));
-    
   }
 
 }

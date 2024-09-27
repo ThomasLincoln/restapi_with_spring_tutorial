@@ -46,7 +46,7 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   
   protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, 
   FilterChain filterChain, Authentication authentication) throws IOException, ServletException {
-    UserSprintSecurity userSprintSecurity = (UserSprintSecurity) authentication.getPrincipal();
+    UserSpringSecurity userSprintSecurity = (UserSpringSecurity) authentication.getPrincipal();
     String username = userSprintSecurity.getUsername();
     String token = jwtUtil.generateToken(username);
     response.addHeader("Authorizarion", "Bearer " + token);

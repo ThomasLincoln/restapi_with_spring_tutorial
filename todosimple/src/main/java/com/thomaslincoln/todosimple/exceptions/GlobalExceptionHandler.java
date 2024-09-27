@@ -1,6 +1,7 @@
 package com.thomaslincoln.todosimple.exceptions;
 
 import java.io.IOException;
+import java.nio.file.AccessDeniedException;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.thomaslincoln.todosimple.services.exceptions.AuthorizationException;
 import com.thomaslincoln.todosimple.services.exceptions.DataBindingViolationException;
 import com.thomaslincoln.todosimple.services.exceptions.ObjectNotFoundException;
 
@@ -30,7 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
 @Slf4j(topic = "GLOBAL_EXCEPTION_HANDLER")
-public class GlobalExceptionHandler extends ResponseEntityExceptionHandler implements AuthenticationFailureHandler{
+public class GlobalExceptionHandler extends ResponseEntityExceptionHandler implements AuthenticationFailureHandler {
 
   @Value("${server.error.include-exception}")
   private boolean printStackTrace;
@@ -58,6 +60,42 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler imple
         exception,
         errorMessage,
         HttpStatus.INTERNAL_SERVER_ERROR,
+        request);
+  }
+
+  @ExceptionHandler(AuthenticationException.class)
+  @ResponseStatus(HttpStatus.UNAUTHORIZED)
+  public ResponseEntity<Object> handleAuthenticationException(
+      AuthenticationException authenticationException,
+      WebRequest request) {
+    log.error("Authentication error ", authenticationException);
+    return buildErrorResponse(
+        authenticationException,
+        HttpStatus.UNAUTHORIZED,
+        request);
+  }
+
+  @ExceptionHandler(AccessDeniedException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public ResponseEntity<Object> handleAccessDeniedException(
+      AccessDeniedException accessDeniedException,
+      WebRequest request) {
+    log.error("Authorization error ", accessDeniedException);
+    return buildErrorResponse(
+        accessDeniedException,
+        HttpStatus.FORBIDDEN,
+        request);
+  }
+
+  @ExceptionHandler(AuthorizationException.class)
+  @ResponseStatus(HttpStatus.FORBIDDEN)
+  public ResponseEntity<Object> handleAuthorizationException(
+      AuthorizationException authorizationException,
+      WebRequest request) {
+    log.error("Authorization error ", authorizationException);
+    return buildErrorResponse(
+        authorizationException,
+        HttpStatus.FORBIDDEN,
         request);
   }
 
@@ -133,10 +171,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler imple
   @Override
   public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,
       AuthenticationException exception) throws IOException, ServletException {
-        Integer status = HttpStatus.FORBIDDEN.value();
-        response.setStatus(status);
-        response.setContentType("application/json");
-        ErrorResponse errorResponse = new ErrorResponse(status, "Email ou senha inválidos");
-        response.getWriter().append(errorResponse.toJson());
+    Integer status = HttpStatus.FORBIDDEN.value();
+    response.setStatus(status);
+    response.setContentType("application/json");
+    ErrorResponse errorResponse = new ErrorResponse(status, "Email ou senha inválidos");
+    response.getWriter().append(errorResponse.toJson());
   }
 }
