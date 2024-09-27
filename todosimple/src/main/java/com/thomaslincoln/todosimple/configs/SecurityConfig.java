@@ -31,8 +31,6 @@ public class SecurityConfig {
 
   private AuthenticationManager authenticationManager;
 
-  private AuthorizationFilter authorizationFilter;
-
   @Autowired
   private UserDetailsService userDetailsService;
 

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.thomaslincoln.todosimple.models.Task;
-import com.thomaslincoln.todosimple.repositories.TaskRepository;
 import com.thomaslincoln.todosimple.services.TaskService;
 import com.thomaslincoln.todosimple.services.UserService;
 
@@ -33,21 +32,17 @@ public class TaskController {
   @Autowired
   private TaskService taskService;
 
-  @Autowired
-  private UserService userService;
-
   @GetMapping("/{id}")
   public ResponseEntity<Task> findById(@PathVariable Long id) {
     Task obj = this.taskService.findById(id);
     return ResponseEntity.ok(obj);
   }
 
-  @GetMapping("/user/{userId}")
-  public ResponseEntity<List<Task>> findAllByUserId(@PathVariable Long userId) {
-    this.userService.findById(userId);
-    List<Task> tasks = this.taskService.findAllByUserId(userId);
-    return ResponseEntity.ok().body(tasks);
- }
+  @GetMapping("/user")
+    public ResponseEntity<List<Task>> findAllByUser() {
+        List<Task> objs = this.taskService.findAllByUser();
+        return ResponseEntity.ok().body(objs);
+    }
   
   
   @PostMapping()

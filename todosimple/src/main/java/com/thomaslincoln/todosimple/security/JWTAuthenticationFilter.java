@@ -18,7 +18,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter{
+public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
   private AuthenticationManager authenticationManager;
 
@@ -31,21 +31,22 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
   }
 
   @Override
-  public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException{
+  public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
+      throws AuthenticationException {
     try {
       User userCredentials = new ObjectMapper().readValue(request.getInputStream(), User.class);
       UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-        userCredentials.getUsername(), userCredentials.getPassword(), new ArrayList<>());
-      
+          userCredentials.getUsername(), userCredentials.getPassword(), new ArrayList<>());
+
       Authentication authentication = this.authenticationManager.authenticate(authToken);
       return authentication;
-    } catch (Exception e) {
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
-  
-  protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, 
-  FilterChain filterChain, Authentication authentication) throws IOException, ServletException {
+
+  protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
+      FilterChain filterChain, Authentication authentication) throws IOException, ServletException {
     UserSpringSecurity userSprintSecurity = (UserSpringSecurity) authentication.getPrincipal();
     String username = userSprintSecurity.getUsername();
     String token = jwtUtil.generateToken(username);

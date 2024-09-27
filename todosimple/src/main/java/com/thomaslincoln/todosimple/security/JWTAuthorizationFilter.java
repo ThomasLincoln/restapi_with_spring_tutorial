@@ -16,9 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
-
   private JWTUtil jwtUtil;
-
   private UserDetailsService userDetailsService;
 
   public JWTAuthorizationFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil,
@@ -28,15 +26,15 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     this.userDetailsService = userDetailsService;
   }
 
+  @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws IOException, ServletException {
     String authorizationHeader = request.getHeader("Authorization");
     if (Objects.nonNull(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
       String token = authorizationHeader.substring(7);
       UsernamePasswordAuthenticationToken auth = getAuthentication(token);
-      if (Objects.nonNull(auth)) {
+      if (Objects.nonNull(auth))
         SecurityContextHolder.getContext().setAuthentication(auth);
-      }
     }
     filterChain.doFilter(request, response);
   }
@@ -45,11 +43,10 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     if (this.jwtUtil.isValidToken(token)) {
       String username = this.jwtUtil.getUsername(token);
       UserDetails user = this.userDetailsService.loadUserByUsername(username);
-      UsernamePasswordAuthenticationToken authenticatedUser = new UsernamePasswordAuthenticationToken(username, null,
+      UsernamePasswordAuthenticationToken authenticatedUser = new UsernamePasswordAuthenticationToken(user, null,
           user.getAuthorities());
       return authenticatedUser;
     }
     return null;
   }
-
 }
