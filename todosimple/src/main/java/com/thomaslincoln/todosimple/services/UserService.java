@@ -12,12 +12,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.thomaslincoln.todosimple.models.User;
+import com.thomaslincoln.todosimple.models.dto.UserCreateDTO;
+import com.thomaslincoln.todosimple.models.dto.UserUpdateDTO;
 import com.thomaslincoln.todosimple.models.enums.ProfileEnum;
 import com.thomaslincoln.todosimple.repositories.UserRepository;
 import com.thomaslincoln.todosimple.security.UserSpringSecurity;
 import com.thomaslincoln.todosimple.services.exceptions.AuthorizationException;
 import com.thomaslincoln.todosimple.services.exceptions.DataBindingViolationException;
 import com.thomaslincoln.todosimple.services.exceptions.ObjectNotFoundException;
+
+import jakarta.validation.Valid;
 
 @Service
 public class UserService {
@@ -30,7 +34,8 @@ public class UserService {
 
   public User findById(Long id) {
     UserSpringSecurity userSpringSecurity = authenticated();
-    // verificamos se ele está logado e só permitimos quem está logado e está buscando o próprio ID ou se for admin
+    // verificamos se ele está logado e só permitimos quem está logado e está
+    // buscando o próprio ID ou se for admin
     if (!Objects.nonNull(userSpringSecurity)
         || userSpringSecurity.hasRole(ProfileEnum.ADMIN) && !id.equals(userSpringSecurity.getId())) {
       throw new AuthorizationException("Acesso negado");
@@ -72,5 +77,19 @@ public class UserService {
     } catch (Exception e) {
       return null;
     }
+  }
+
+  public User fromDTO(@Valid UserCreateDTO obj) {
+    User user = new User();
+    user.setUsername(obj.getUsername());
+    user.setPassword(obj.getPassword());
+    return user;
+  }
+
+  public User fromDTO(@Valid UserUpdateDTO obj) {
+    User user = new User();
+    user.setId(obj.getId());
+    user.setPassword(obj.getPassword());
+    return user;
   }
 }

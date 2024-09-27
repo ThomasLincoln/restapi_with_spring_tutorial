@@ -19,30 +19,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Getter
-@Setter
-@EqualsAndHashCode
-@Table(name = User.TABLE_NAME)
+@Data
 public class User {
-  public interface CreateUser {
-  }
-
-  public interface UpdateUser {
-  }
-
   public static final String TABLE_NAME = "user";
 
   @Id
@@ -51,16 +38,14 @@ public class User {
   private Long id;
 
   @Column(name = "username", length = 100, nullable = false, unique = true)
-  @NotNull(groups = CreateUser.class)
-  @NotEmpty(groups = CreateUser.class)
-  @Size(groups = CreateUser.class, min = 2, max = 100)
+  @NotBlank
+  @Size(min = 2, max = 100)
   private String username;
 
   @JsonProperty(access = Access.WRITE_ONLY)
   @Column(name = "password", nullable = false)
-  @NotEmpty(groups = { CreateUser.class, UpdateUser.class })
-  @NotNull(groups = { CreateUser.class, UpdateUser.class })
-  @Size(groups = { CreateUser.class, UpdateUser.class }, min = 8, max = 60)
+  @NotBlank
+  @Size(min = 8, max = 60)
   private String password;
 
   @OneToMany(mappedBy = "user")
